@@ -29,29 +29,21 @@ program.command("remove-comments <access-token>").action(function(cmd) {
 		function(response) {
 			for (var p of response.data) {
 				if (p["comments"]) {
+          console.log(p.comments.paging)
 					let commentsWithPhones = p.comments.data.filter(
 						m =>
 							!(
 								IDREGEX.test(m.message) ||
 								SREGEX.test(m.message)
-							) &&
-							REGEX.test(m.message) &&
-							!m.is_hidden
+							) && REGEX.test(m.message)
 					);
-					if (commentsWithPhones.length) {
-						console.log(
-							commentsWithPhones.map(m => [
-								m.id,
-								IDREGEX.test(m.message),
-								m.message,
-								m.can_hide,
-								m.is_hidden,
-							])
-						);
-
-						for (var m of commentsWithPhones.filter(
-							m => m.can_hide
-						)) {
+					commentsWithPhones.forEach(m =>
+						console.log(m.id, m.message, m.can_hide, m.is_hidden)
+					);
+					if (commentsWithPhones.filter(m => !m.is_hidden).length) {
+						for (var m of commentsWithPhones
+							.filter(m => !m.is_hidden)
+							.filter(m => m.can_hide)) {
 							FB.api(
 								`/${m.id}`,
 								"POST",
@@ -75,5 +67,5 @@ program.command("remove-comments <access-token>").action(function(cmd) {
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {
-  program.outputHelp();
+	program.outputHelp();
 }

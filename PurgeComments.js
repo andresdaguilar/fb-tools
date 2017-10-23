@@ -29,6 +29,8 @@ program.command("remove-comments <access-token>").action(function(cmd) {
 		function(response) {
 			for (var p of response.data) {
 				if (p["comments"]) {
+          // We need to page this.
+          
           console.log(p.comments.paging)
 					let commentsWithPhones = p.comments.data.filter(
 						m =>
